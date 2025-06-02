@@ -44,7 +44,7 @@ import {
     const web3Keypair = Keypair.fromSecretKey(new Uint8Array(walletFile));
   
     // Fetch metadata from remote URL
-    const metadataUrl = "https://raw.githubusercontent.com/cameronspaul/create-solana-token/refs/heads/main/metadata-data.json";
+    const metadataUrl = "https://raw.githubusercontent.com/cameronspaul/create-solana-token-metadata/refs/heads/main/metadata-data.json";
     console.log("Fetching metadata from:", metadataUrl);
     const response = await fetch(metadataUrl);
     if (!response.ok) throw new Error(`Failed to fetch metadata: ${response.statusText}`);

@@ -2,7 +2,7 @@
     "name": "FartCoin69",
     "symbol": "FC69",
     "description": "The best new fart coin",
-    "image": "https://raw.githubusercontent.com/cameronspaul/create-solana-token/refs/heads/main/image.png",
+    "image": "https://raw.githubusercontent.com/cameronspaul/create-solana-token-metadata/refs/heads/main/image.png",
     "creator": {
       "name": "Fartpooer",
       "site": "www.fart.io"
