@@ -1,4 +1,5 @@
 import {
+  createAndMint,
     createFungible,
     mplTokenMetadata,
     revokeStandardV1,
@@ -55,35 +56,21 @@ import {
   
     // Creating the mintIx
     const mintSigner = generateSigner(umi);
-    const createFungibleIx = createFungible(umi, {
+
+    const mintAndCreateIx = createAndMint(umi, {
       mint: mintSigner,
       name: metadata.name,
-      uri: metadataUri,
-      sellerFeeBasisPoints: percentAmount(0),
-      decimals: 9, // set the amount of decimals you want your token to have.
       symbol: metadata.symbol,
-    });
-  
-    const createTokenIx = createTokenIfMissing(umi, {
-      mint: mintSigner.publicKey,
-      owner: umi.identity.publicKey,
-      ataProgram: getSplAssociatedTokenProgramId(umi),
-    });
-  
-    const mintTokensIx = mintTokensTo(umi, {
-      mint: mintSigner.publicKey,
-      token: findAssociatedTokenPda(umi, {
-        mint: mintSigner.publicKey,
-        owner: umi.identity.publicKey,
-      }),
+      uri: metadataUri,
+      sellerFeeBasisPoints: percentAmount(2.5),
+      decimals: 9,
       amount: BigInt(1000000000000000000),
+      tokenOwner: umi.identity.publicKey,
+      tokenStandard: TokenStandard.Fungible,
     });
 
     console.log("Sending transaction")
-    const tx = await createFungibleIx
-      .add(createTokenIx)
-      .add(mintTokensIx)
-      .sendAndConfirm(umi);
+    const tx = await mintAndCreateIx.sendAndConfirm(umi);
   
     const signature = base58.deserialize(tx.signature)[0];
     console.log('\nTransaction Complete')
@@ -92,45 +79,46 @@ import {
     console.log('View Token on Solana Explorer')
     console.log(`https://explorer.solana.com/address/${mintSigner.publicKey}?cluster=devnet`)
   
-    // Convert mintSigner publicKey to Solana PublicKey
-    const mintPublicKey = new PublicKey(mintSigner.publicKey);
+
+// Convert mintSigner publicKey to Solana PublicKey
+const mintPublicKey = new PublicKey(mintSigner.publicKey);
   
-    try {
-        // Create a single transaction for both authority changes
-        const transaction = new Transaction();
+try {
+    // Create a single transaction for both authority changes
+    const transaction = new Transaction();
 
-        // Add instruction to revoke mint authority
-        transaction.add(
-            createSetAuthorityInstruction(
-                mintPublicKey,
-                web3Keypair.publicKey,
-                AuthorityType.MintTokens,
-                null
-            )
-        );
+    // Add instruction to revoke mint authority
+    transaction.add(
+        createSetAuthorityInstruction(
+            mintPublicKey,
+            web3Keypair.publicKey,
+            AuthorityType.MintTokens,
+            null
+        )
+    );
 
-        // Add instruction to revoke freeze authority
-        transaction.add(
-            createSetAuthorityInstruction(
-                mintPublicKey,
-                web3Keypair.publicKey,
-                AuthorityType.FreezeAccount,
-                null
-            )
-        );
+    // Add instruction to revoke freeze authority
+    transaction.add(
+        createSetAuthorityInstruction(
+            mintPublicKey,
+            web3Keypair.publicKey,
+            AuthorityType.FreezeAccount,
+            null
+        )
+    );
 
-        // Send and confirm the single transaction
-        const signature = await sendAndConfirmTransaction(
-            connection,
-            transaction,
-            [web3Keypair]
-        );
-        
-        console.log('Mint and Freeze authorities successfully revoked in a single transaction.');
-        console.log(`Transaction signature: ${signature}`);
-    } catch (error) {
-        console.error('Error revoking authorities:', error);
-    }
-  };
-  
-  createAndMintTokens()
+    // Send and confirm the single transaction
+    const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [web3Keypair]
+    );
+    
+    console.log('Mint and Freeze authorities successfully revoked in a single transaction.');
+    console.log(`Transaction signature: ${signature}`);
+} catch (error) {
+    console.error('Error revoking authorities:', error);
+}
+};
+
+createAndMintTokens()
