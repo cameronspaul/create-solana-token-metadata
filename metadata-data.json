@@ -1,11 +1,11 @@
 {
-    "name": "FartCoin69",
-    "symbol": "FC69",
-    "description": "The best new fart coin",
+    "name": "Taskmanager",
+    "symbol": "TSK",
+    "description": "Taskmanager coin",
     "image": "https://raw.githubusercontent.com/cameronspaul/create-solana-token-metadata/refs/heads/main/image.png",
     "creator": {
-      "name": "Fartpooer",
-      "site": "www.fart.io"
+      "name": "Taskmanger",
+      "site": "www.task.io"
     },
     "external_url": "",
     "twitter": "",
